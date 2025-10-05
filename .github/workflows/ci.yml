@@ -1,0 +1,40 @@
+name: CI with Required Caching
+
+on: 
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual running on GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    # 1. Prime the cache with the required key
+    - name: Cache dependencies
+      id: cache_step
+      # Use actions/cache@v4 or newer
+      uses: actions/cache@v4 
+      with:
+        # IMPORTANT: This path must point to a directory that is created/populated
+        # during the job's run (e.g., node_modules, .venv, or a dummy folder)
+        path: ${{ github.workspace }}/.my-temp-cache
+        key: cache-Ffb477d1
+        restore-keys: |
+          cache-
+
+    # 2. Echo the required cache hit/miss result
+    - name: Echo cache hit/miss result
+      run: |
+        if [ "${{ steps.cache_step.outputs.cache-hit }}" = "true" ]; then
+          echo "prime-cache-Ffb477d1: cache hit"
+        else
+          echo "prime-cache-Ffb477d1: cache miss"
+        fi
+
+    # 3. Create the dummy folder for the cache to save (ONLY needed if not installing real dependencies)
+    - name: Create dummy cache content (if miss)
+      if: steps.cache_step.outputs.cache-hit != 'true'
+      run: mkdir -p ${{ github.workspace }}/.my-temp-cache/dependencies.txt
