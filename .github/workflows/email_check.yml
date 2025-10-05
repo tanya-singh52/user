@@ -1,0 +1,23 @@
+name: Email Verification Workflow
+
+on: 
+  # This makes the workflow run automatically upon commit
+  push:
+    branches:
+      - main
+  # This allows manual triggering
+  workflow_dispatch:
+
+jobs:
+  verify_email:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    # REQUIRED STEP: The name must exactly match the email address for the assignment to pass.
+    - name: 22f2001634@ds.study.iitm.ac.in
+      run: |
+        echo "The required email step has run successfully."
+        
+    - name: Complete job
+      run: echo "Workflow finished."
